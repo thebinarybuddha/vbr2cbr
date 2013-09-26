@@ -14,7 +14,7 @@
 #	Script version:		0.1
 #	Last Update:		02DEC10
 ######################################################
-use strict; use warnings;
+use strict; use warnings; use Switch;
 use MP3::Info;
 
 #	Declare Variables! Not War!
@@ -39,59 +39,22 @@ if ( $vbr eq '') {
 #	printf "File is CBR.\n";
 }else{
 #	For VBR detected files, select the appropriate CBR.
-	if ( $vbr lt "320" ) {
-		if ( $vbr lt "256" ) {
-			if ( $vbr lt "224" ) {
-				if ( $vbr lt "192" ) {
-					if ( $vbr lt "160" ) {
-						if ( $vbr lt "128" ) {
-							if ( $vbr lt "112" ) {
-								if ( $vbr lt "96" ) {
-									if ( $vbr lt "80" ) {
-										if ( $vbr lt "64" ) {
-											if ( $vbr lt "56" ) {
-												if ( $vbr lt "48" ) {
-													if ( $vbr lt "40" ) {
-														$cbr="32";
-													}else{
-														$cbr="40";
-													}
-												}else{
-													$cbr="48";
-												}
-											}else{
-												$cbr="56";
-											}
-										}else{
-											$cbr="64";
-										}
-									}else{
-										$cbr="80";
-									}
-								}else{
-									$cbr="96";
-								}
-							}else{
-								$cbr="112";
-							}
-						}else{
-							$cbr="128";
-						}
-					}else{
-						$cbr="160";
-					}
-				}else{
-					$cbr="192";
-				}
-			}else{
-				$cbr="224";
-			}
-		}else{
-			$cbr="256";
-		}
-	} else {
-		$cbr="320";
-	}
+switch ($vbr) {
+    case { $vbr <= 32 } { $cbr = 32; last if $vbr <= 32; next; }
+    case { $vbr <= 40 } { $cbr = 40; last if $vbr <= 40; next; }
+    case { $vbr <= 48 } { $cbr = 48; last if $vbr <= 48; next; }
+    case { $vbr <= 56 } { $cbr = 56; last if $vbr <= 56; next; }
+    case { $vbr <= 64 } { $cbr = 64; last if $vbr <= 64; next; }
+    case { $vbr <= 80 } { $cbr = 80; last if $vbr <= 80; next; }
+    case { $vbr <= 96 } { $cbr = 96; last if $vbr <= 96; next; }
+    case { $vbr <= 112 } { $cbr = 112; last if $vbr <= 112; next; }
+    case { $vbr <= 128 } { $cbr = 128; last if $vbr <= 128; next; }
+    case { $vbr <= 160 } { $cbr = 160; last if $vbr <= 160; next; }
+    case { $vbr <= 192 } { $cbr = 192; last if $vbr <= 192; next; }
+    case { $vbr <= 224 } { $cbr = 224; last if $vbr <= 224; next; }
+    case { $vbr <= 256 } { $cbr = 256; last if $vbr <= 256; next; }
+    case { $vbr <= 320 } { $cbr = 320; last if $vbr <= 320; next; }
+}
 #	Add a conversion information in the MP3 comments tag.
 	$comm = "$comm Converted to $cbr CBR from $vbr VBR on `date`";
 	$vbr = chomp($vbr);
