@@ -8,27 +8,28 @@
 #	BE SURE TO CHECK THE $VBR_ARCHIVE VARIABLE!!!!
 #
 #	Standard usage on Linux computers:
-#	$ find ~/mp3_library -type f -iname "*.mp3" -exec vbr.pl {} \;
+#	$ find ~/mp3_library -type f -iname "*.mp3" -exec vbr2cbr.pl {} \;
 #	
-#	Original script Author:	void(at)member.fsf.org
-#	Script version:		0.1
-#	Last Update:		02DEC10
+#	Original script Author:	Boyd.Hanalei.Ako (at) gmail.com
 ######################################################
-use strict; use warnings; use Switch;
+use strict; 
+use warnings; 
+use Switch;
 use MP3::Info;
 
 #	Declare Variables! Not War!
 my $file = $ARGV[0];
 my $tag = get_mp3tag($file);
+my $info = get_mp3info($file);
 my $artist = "$tag->{ARTIST}";
 my $album = "$tag->{ALBUM}";
 my $title = "$tag->{TITLE}";
 my $tracknum = "$tag->{TRACKNUM}";
 my $genre = "$tag->{GENRE}";
-my $vbr = `mp3_check -v "$file" | grep "VBR_AVERAGE" | awk '{ print \$2 }'`;
+my $vbr = "$info->{BITRATE}";
 my $cbr = "";
 my $comm = "$tag->{COMMENT}";
-my $vbr_archive="/home/psyber/vbr_archive";
+my $vbr_archive="$ENV{'TMPDIR'}/vbr2cbr/";
 
 #	Let's get started...
 printf "File: $file";
@@ -40,24 +41,24 @@ if ( $vbr eq '') {
 }else{
 #	For VBR detected files, select the appropriate CBR.
 switch ($vbr) {
-    case { $vbr <= 32 } { $cbr = 32; last if $vbr <= 32; next; }
-    case { $vbr <= 40 } { $cbr = 40; last if $vbr <= 40; next; }
-    case { $vbr <= 48 } { $cbr = 48; last if $vbr <= 48; next; }
-    case { $vbr <= 56 } { $cbr = 56; last if $vbr <= 56; next; }
-    case { $vbr <= 64 } { $cbr = 64; last if $vbr <= 64; next; }
-    case { $vbr <= 80 } { $cbr = 80; last if $vbr <= 80; next; }
-    case { $vbr <= 96 } { $cbr = 96; last if $vbr <= 96; next; }
-    case { $vbr <= 112 } { $cbr = 112; last if $vbr <= 112; next; }
-    case { $vbr <= 128 } { $cbr = 128; last if $vbr <= 128; next; }
-    case { $vbr <= 160 } { $cbr = 160; last if $vbr <= 160; next; }
-    case { $vbr <= 192 } { $cbr = 192; last if $vbr <= 192; next; }
-    case { $vbr <= 224 } { $cbr = 224; last if $vbr <= 224; next; }
-    case { $vbr <= 256 } { $cbr = 256; last if $vbr <= 256; next; }
-    case { $vbr <= 320 } { $cbr = 320; last if $vbr <= 320; next; }
+    case { $vbr >= 32 } { $cbr = 32; last if $vbr <= 32; next; }
+    case { $vbr >= 40 } { $cbr = 40; last if $vbr <= 40; next; }
+    case { $vbr >= 48 } { $cbr = 48; last if $vbr <= 48; next; }
+    case { $vbr >= 56 } { $cbr = 56; last if $vbr <= 56; next; }
+    case { $vbr >= 64 } { $cbr = 64; last if $vbr <= 64; next; }
+    case { $vbr >= 80 } { $cbr = 80; last if $vbr <= 80; next; }
+    case { $vbr >= 96 } { $cbr = 96; last if $vbr <= 96; next; }
+    case { $vbr >= 112 } { $cbr = 112; last if $vbr <= 112; next; }
+    case { $vbr >= 128 } { $cbr = 128; last if $vbr <= 128; next; }
+    case { $vbr >= 160 } { $cbr = 160; last if $vbr <= 160; next; }
+    case { $vbr >= 192 } { $cbr = 192; last if $vbr <= 192; next; }
+    case { $vbr >= 224 } { $cbr = 224; last if $vbr <= 224; next; }
+    case { $vbr >= 256 } { $cbr = 256; last if $vbr <= 256; next; }
+    case { $vbr >= 320 } { $cbr = 320; last if $vbr <= 320; next; }
 }
 #	Add a conversion information in the MP3 comments tag.
 	$comm = "$comm Converted to $cbr CBR from $vbr VBR on `date`";
-	$vbr = chomp($vbr);
+#	$vbr = chomp($vbr);
 #	Show me the tag and conversion information... So, I know you're not being lazy.
 	printf "\n=============================================================================\n";
 	printf "File:\t\t$file\n";
